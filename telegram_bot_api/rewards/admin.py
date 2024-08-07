@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import DailyReward
 
-# Register your models here.
+@admin.register(DailyReward)
+class DailyRewardAdmin(admin.ModelAdmin):
+    list_display = ('day', 'amount')
