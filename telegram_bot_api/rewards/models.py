@@ -33,7 +33,6 @@ def give_referrer_bonus(sender, instance, created, **kwargs):
         if referrer:
             bonus_amount = Decimal(instance.amount) * Decimal('0.05')
             
-            # Referrer için yeni bir UserDailyReward oluştur
             UserDailyReward.objects.create(
                 user=referrer,
                 day=instance.day,
@@ -41,10 +40,5 @@ def give_referrer_bonus(sender, instance, created, **kwargs):
                 is_referral_bonus=True
             )
             
-            # Referrer'ın bakiyesini güncelle
             referrer.balance += bonus_amount
             referrer.save()
-
-        # Ödül alan kullanıcının bakiyesini güncelle
-        instance.user.balance += instance.amount
-        instance.user.save()
