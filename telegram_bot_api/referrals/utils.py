@@ -3,5 +3,5 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-def get_referral_link(user_id):
-    return reverse('referral-list') + f'?referrer_id={user_id}'
+def generate_referral_link(user_id, bot_username):
+    return f"https://t.me/{bot_username}?start={user_id}"
