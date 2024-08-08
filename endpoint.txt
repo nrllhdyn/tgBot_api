@@ -1,0 +1,33 @@
+User API Endpoint'leri
+
+POST /api/users/
+GET /api/users/
+GET /api/users/{id}/
+PUT /api/users/{id}/
+DELETE /api/users/{id}/
+================================
+================================
+Daily Reward API Endpoint'leri
+
+GET /api/rewards/daily-rewards/
+POST /api/rewards/user-daily-rewards/claim_reward/
+GET /api/rewards/user-daily-rewards/reward_status/
+================================
+================================
+Task API Endpoint'leri
+
+GET /api/tasks/
+POST /api/tasks/
+GET /api/user-tasks/
+POST /api/user-tasks/{id}/complete/
+================================
+================================
+
+Task Category API Endpoint'leri
+GET /api/task-categories/
+POST /api/task-categories/
+================================
+================================
+
+Token Alma
+POST /api-token-auth/

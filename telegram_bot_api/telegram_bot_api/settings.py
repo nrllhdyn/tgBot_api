@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'referrals',
     'game',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
