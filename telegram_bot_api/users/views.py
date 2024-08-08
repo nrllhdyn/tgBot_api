@@ -13,6 +13,22 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserCreateSerializer
         return UserSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        referral_link = request.data.get('referral_link')
+        if referral_link:
+            try:
+                referrer = User.objects.get(referral_link=referral_link)
+                serializer.validated_data['by_referred'] = referrer
+            except User.DoesNotExist:
+                pass
+        
+        user = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     @action(detail=True, methods=['post'])
     def start_bot(self, request, pk=None):
         user = self.get_object()
@@ -25,3 +41,8 @@ class UserViewSet(viewsets.ModelViewSet):
         referrals = user.referrals.all()
         serializer = UserSerializer(referrals, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def my_referral_link(self, request):
+        user = request.user
+        return Response({'referral_link': user.referral_link})

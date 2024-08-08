@@ -25,7 +25,7 @@ class UserDailyRewardViewSet(viewsets.ModelViewSet):
 
         if last_claim:
             next_day = last_claim.day + 1
-            if (timezone.now() - last_claim.claimed_at) < timedelta(days=1):
+            if (timezone.now().date() - last_claim.claimed_at.date()) < timedelta(days=1):
                 return Response({"detail": "You can only claim one reward per day."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             next_day = 1
@@ -44,22 +44,25 @@ class UserDailyRewardViewSet(viewsets.ModelViewSet):
             amount=daily_reward.amount
         )
 
+        # Update user's balance
         user.balance += daily_reward.amount
+        user.last_daily_reward = timezone.now().date()
         user.save()
 
-        # Referral reward
-        referral = Referral.objects.filter(referred=user).first()
-        if referral:
-            referrer = referral.referrer
-            referral_reward_amount = Decimal(daily_reward.amount) * Decimal('0.05')
+        # Check for referrer and give them 5% bonus
+        if user.by_referred:
+            referrer = user.by_referred
+            referral_bonus = Decimal(daily_reward.amount) * Decimal('0.05')
+            referrer.balance += referral_bonus
+            referrer.save()
+
+            # Create a record for the referral bonus
             UserDailyReward.objects.create(
                 user=referrer,
                 day=next_day,
-                amount=referral_reward_amount,
-                is_referral_reward=True
+                amount=referral_bonus,
+                is_referral_bonus=True
             )
-            referrer.balance += referral_reward_amount
-            referrer.save()
 
         serializer = self.get_serializer(user_daily_reward)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

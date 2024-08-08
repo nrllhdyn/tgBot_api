@@ -4,13 +4,14 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'telegram_user_id', 'referral_link', 'balance', 'status', 'by_referred', 'last_daily_reward']
-        read_only_fields = ['id', 'referral_link', 'balance', 'status', 'last_daily_reward']
+        fields = ['id', 'username', 'email', 'telegram_user_id', 'referral_link', 'balance', 'status']
+        read_only_fields = ['referral_link', 'balance']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'telegram_user_id', 'by_referred']
+        fields = ['username', 'password', 'email', 'telegram_user_id']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
