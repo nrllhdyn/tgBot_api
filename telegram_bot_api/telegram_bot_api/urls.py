@@ -7,5 +7,6 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/rewards/', include('rewards.urls')),
     path('api/tasks/', include('tasks.urls')),
+    path('api/referrals/', include('referrals.urls')),
     path('api-token-auth/', obtain_auth_token),
 ]
