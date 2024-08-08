@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
-from .models import Task, UserTask
+from .models import Task, UserTask, ensure_user_tasks
 from .serializers import TaskSerializer, UserTaskSerializer
 from rest_framework.views import APIView
 
@@ -14,6 +14,7 @@ class UserTaskViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserTaskSerializer
 
     def get_queryset(self):
+        ensure_user_tasks(self.request.user)
         return UserTask.objects.filter(user=self.request.user)
 
     @action(detail=True, methods=['post'])
@@ -32,5 +33,8 @@ class UserTaskViewSet(viewsets.ReadOnlyModelViewSet):
         user.save()
         
         return Response({"detail": "Task completed successfully.", "points_earned": user_task.task.rewards})
-    
 
+class EnsureUserTasksView(APIView):
+    def post(self, request):
+        ensure_user_tasks(request.user)
+        return Response({"detail": "User tasks have been updated."}, status=status.HTTP_200_OK)
