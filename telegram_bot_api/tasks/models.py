@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 User = get_user_model()
 class TaskCategory(models.Model):
@@ -31,3 +33,10 @@ class UserTask(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.task.name}"
+    
+@receiver(post_save, sender=Task)
+def create_user_tasks(sender, instance, created, **kwargs):
+    if created:
+        users = User.objects.all()
+        for user in users:
+            UserTask.objects.create(user=user, task=instance)
