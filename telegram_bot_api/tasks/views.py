@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from .models import Task, UserTask
 from .serializers import TaskSerializer, UserTaskSerializer
+from rest_framework.views import APIView
 
 class TaskViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Task.objects.all()
@@ -31,3 +32,5 @@ class UserTaskViewSet(viewsets.ReadOnlyModelViewSet):
         user.save()
         
         return Response({"detail": "Task completed successfully.", "points_earned": user_task.task.rewards})
+    
+
