@@ -5,6 +5,8 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import DailyReward, UserDailyReward
 from .serializers import DailyRewardSerializer, UserDailyRewardSerializer
+from referrals.models import Referral
+from decimal import Decimal
 
 class DailyRewardViewSet(viewsets.ModelViewSet):
     queryset = DailyReward.objects.all()
@@ -44,6 +46,20 @@ class UserDailyRewardViewSet(viewsets.ModelViewSet):
 
         user.balance += daily_reward.amount
         user.save()
+
+        # Referral reward
+        referral = Referral.objects.filter(referred=user).first()
+        if referral:
+            referrer = referral.referrer
+            referral_reward_amount = Decimal(daily_reward.amount) * Decimal('0.05')
+            UserDailyReward.objects.create(
+                user=referrer,
+                day=next_day,
+                amount=referral_reward_amount,
+                is_referral_reward=True
+            )
+            referrer.balance += referral_reward_amount
+            referrer.save()
 
         serializer = self.get_serializer(user_daily_reward)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
