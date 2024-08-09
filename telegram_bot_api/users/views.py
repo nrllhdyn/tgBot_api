@@ -46,3 +46,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def my_referral_link(self, request):
         user = request.user
         return Response({'referral_link': user.referral_link})
+    
+    @action(detail=False, methods=['get'])
+    def my_balance(self, request):
+        user = request.user
+        return Response({'balance': user.balance})
